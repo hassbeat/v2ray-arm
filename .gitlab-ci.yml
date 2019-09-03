@@ -1,0 +1,62 @@
+variables:
+  BASENAME: v2ray
+
+stages:
+  - build
+  # - mirror
+
+.build_stage: &build_stage
+  stage: build
+  only:
+    - branches
+  before_script:
+    - docker info
+  script:
+    - apk add --no-cache bash
+    # build image
+    - sed -i "s/ubuntu\:/${ARMVER}\/ubuntu\:/" ./Dockerfile
+    - sed -i "s/alpine\:/${ARMVER}\/alpine\:/" ./Dockerfile
+    - docker build -q -t ${DOCKER_NS}/${BASENAME}-${ARMVER} -f Dockerfile ./
+    # docker push
+    - docker login --username ${DOCKER_USERNAME} --password ${DOCKER_PASSWORD} 
+    - docker images && docker push ${DOCKER_NS}/${BASENAME}-${ARMVER}
+
+build-arm32v7:
+  <<: *build_stage
+  image: arm32v7/docker:stable-git
+  services:
+    - name: arm32v7/docker:stable-dind
+      alias: docker
+  tags:
+    - armhf
+    - docker
+  variables:
+    ARMVER: arm32v7
+
+build-arm64v8:
+  <<: *build_stage
+  image: arm64v8/docker:stable-git
+  services:
+    - name: arm64v8/docker:stable-dind
+      alias: docker
+  tags:
+    - aarch64
+    - docker
+  variables:
+    ARMVER: arm64v8
+
+# mirror:
+#   image: arm32v7/docker:stable-git
+#   stage: mirror
+#   only:
+#     - master
+#   except:
+#     - schedules
+#   script:
+#     - mkdir -p ~/.ssh
+#     - echo "$GITHUB_SSH_KEY" > ~/.ssh/id_rsa
+#     - ssh-keyscan -H github.com > ~/.ssh/known_hosts
+#     - chmod -R 0600 ~/.ssh/
+#     - git remote | grep github || git remote add github git@github.com:yrzr/v2ray-arm.git
+#     - git fetch github
+#     - git push github "$CI_BUILD_REF_NAME" -f
