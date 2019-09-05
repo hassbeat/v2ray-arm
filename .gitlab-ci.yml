@@ -3,7 +3,7 @@ variables:
 
 stages:
   - build
-  # - mirror
+  - mirror
 
 .build_stage: &build_stage
   stage: build
@@ -45,18 +45,19 @@ build-arm64v8:
   variables:
     ARMVER: arm64v8
 
-# mirror:
-#   image: arm32v7/docker:stable-git
-#   stage: mirror
-#   only:
-#     - master
-#   except:
-#     - schedules
-#   script:
-#     - mkdir -p ~/.ssh
-#     - echo "$GITHUB_SSH_KEY" > ~/.ssh/id_rsa
-#     - ssh-keyscan -H github.com > ~/.ssh/known_hosts
-#     - chmod -R 0600 ~/.ssh/
-#     - git remote | grep github || git remote add github git@github.com:yrzr/v2ray-arm.git
-#     - git fetch github
-#     - git push github "$CI_BUILD_REF_NAME" -f
+mirror:
+  image: arm32v7/docker:stable-git
+  stage: mirror
+  only:
+    - master
+  except:
+    - schedules
+  script:
+    - mkdir -p ~/.ssh
+    - echo "$GITHUB_SSH_KEY" > ~/.ssh/id_rsa
+    - ssh-keyscan -H github.com > ~/.ssh/known_hosts
+    - chmod -R 0600 ~/.ssh/
+    - git remote | grep github || git remote add github git@github.com:yrzr/v2ray-arm.git
+    - git fetch github
+    - git checkout -t -b master origin/master || git checkout master
+    - git push github master -f
