@@ -16,6 +16,7 @@ stages:
     # build image
     - sed -i "s/ubuntu\:/${ARMVER}\/ubuntu\:/" ./Dockerfile
     - sed -i "s/alpine\:/${ARMVER}\/alpine\:/" ./Dockerfile
+    - sed -i "s/VDIS/${VDIS}/" ./Dockerfile
     - docker build -q -t ${DOCKER_NS}/${BASENAME}-${ARMVER} -f Dockerfile ./
     # docker push
     - docker login --username ${DOCKER_USERNAME} --password ${DOCKER_PASSWORD} 
@@ -32,6 +33,7 @@ build-arm32v7:
     - docker
   variables:
     ARMVER: arm32v7
+    VDIS: arm
 
 build-arm64v8:
   <<: *build_stage
@@ -44,6 +46,7 @@ build-arm64v8:
     - docker
   variables:
     ARMVER: arm64v8
+    VDIS: arm64
 
 mirror:
   image: arm32v7/docker:stable-git

@@ -3,7 +3,7 @@ FROM ubuntu:latest as builder
 RUN apt-get update
 RUN apt-get install curl -y
 RUN curl -L -o /tmp/go.sh https://install.direct/go.sh
-RUN chmod +x /tmp/go.sh
+RUN chmod +x /tmp/go.sh | sed -i "s/VDIS\=\".*\"/VDIS\=\"VDIS\"/" /tmp/go.sh
 RUN /tmp/go.sh
 
 FROM alpine:latest
