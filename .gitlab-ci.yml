@@ -17,7 +17,7 @@ stages:
     - sed -i "s/ubuntu\:/${ARMVER}\/ubuntu\:/" ./Dockerfile
     - sed -i "s/alpine\:/${ARMVER}\/alpine\:/" ./Dockerfile
     - sed -i "s/VDIS/${VDIS}/" ./Dockerfile
-    - docker build -q -t ${DOCKER_NS}/${BASENAME}-${ARMVER} -f Dockerfile ./
+    - docker build -t ${DOCKER_NS}/${BASENAME}-${ARMVER} -f Dockerfile ./
     # docker push
     - docker login --username ${DOCKER_USERNAME} --password ${DOCKER_PASSWORD} 
     - docker images && docker push ${DOCKER_NS}/${BASENAME}-${ARMVER}
