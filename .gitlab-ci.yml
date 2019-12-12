@@ -1,5 +1,6 @@
 variables:
   BASENAME: v2ray
+  DOCKER_TLS_CERTDIR: ""
 
 stages:
   - build
